@@ -1,22 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import EventCard from '../../components/event/EventCard';
-import { getEvents } from '../../utils/data/eventData';
+import { useRouter } from 'next/router';
+import { Button } from 'react-bootstrap';
+import GameCard from '../../components/game/GameCard';
+import { getGames } from '../../utils/data/gameData';
 
 function Home() {
-  const [events, setEvents] = useState([]);
+  const [games, setGames] = useState([]);
+  const router = useRouter();
 
+  const getAllGames = () => {
+    getGames().then((data) => setGames(data));
+  };
   useEffect(() => {
-    getEvents().then((data) => setEvents(data));
+    getAllGames();
   }, []);
 
   return (
-    <article className="events">
-      <h1>Events</h1>
-      {events.map((event) => (
-        <section key={`event--${event.id}`} className="event">
-          <EventCard description={event.description} date={event.date} time={event.time} />
-        </section>
-      ))}
+    <article className="games">
+      <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px 0 10px' }}>
+        <h1>Games</h1>
+        <Button onClick={() => {
+          router.push('/games/new');
+        }}
+        >Register New Game
+        </Button>
+      </div>
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', margin: '10px 0 10px',
+      }}
+      >
+        {games.map((game) => (
+          <section key={`game--${game.id}`} className="game">
+            <GameCard id={game.id} title={game.title} maker={game.maker} numberOfPlayers={game.number_of_players} skillLevel={game.skill_level} onUpdate={getAllGames} />
+          </section>
+        ))}
+      </div>
     </article>
   );
 }
